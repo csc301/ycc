@@ -1,0 +1,26 @@
+<launch>
+
+    <!--include file="$(find uvc_camera)/launch/camera_node.launch" /-->
+       <node name="usb_camera" pkg="usb_cam" type="usb_cam_node">
+	<param name="video_device" value="/dev/video0" />
+	<param name="image_width" value="320" />
+	<param name="image_height" value="240" />
+	<param name="pixel_format" value="yuyv" />
+	<param name="framerate" value="30" />
+	<param name="camera_frame_id" value="webcam" />
+      <param name="camera_info_url" type="string" value="file://$(find usb_cam)/cal.yaml" />
+   </node>
+
+   <node name="proc" ns="usb_camera" pkg="image_proc" type="image_proc" args="">
+   </node>
+
+    <include file="$(find rplidar_ros)/launch/rplidar.launch" />
+    <node name="obstacle_avoidance_node" pkg="simple_obstacle_avoidance" type="obstacle_avoidance_node" output="screen" />
+    
+  <node pkg="multi_object" type="multi_object_node" name="multi_object_node" output="screen">
+    <param name="camera_topic_name" type="string" value="/usb_camera/image_rect_color"/>
+  </node>
+
+  <node pkg="multi_obj_tracker" type="tracker_node" name="tracker_node" output="screen"/>
+
+</launch>
